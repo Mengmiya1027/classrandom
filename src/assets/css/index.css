@@ -1,0 +1,191 @@
+/* src/assets/css/index.css */
+:root {
+    /* 主色调（紫色系） */
+    --primary-color: #6a0dad; /* 深紫色（深色主题色） */
+    --primary-light: #c0ade9; /* 浅紫色（辅助色） */
+    --primary-dark: #4a0080; /* 暗紫色（ hover 状态） */
+
+    /* 中性色 */
+    --white: #ffffff;
+    --gray-light: #f5f5f5;
+    --gray: #e0e0e0;
+    --gray-dark: #888888;
+    --black: #333333;
+
+    /* 响应色 */
+    --gray-active: #d3d3d3;
+    --white-hover: #e8e8e8;
+
+    /* 功能色 */
+    --success: #4caf50;
+    --warning: #ff9800;
+    --danger: #f44336;
+
+    /* 布局变量 */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+
+    /* 组件变量 */
+    --border-radius: 12px;
+    --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --btn-shadow: 0 2px 4px rgba(106, 13, 173, 0.3);
+    --transition: all 0.3s ease;
+    --transition-fast: all 0.15s ease;
+}
+
+/* 全局重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f9f7fc;
+    color: var(--black);
+    min-height: 100vh;
+}
+
+/* 卡片样式 */
+.card {
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    padding: var(--spacing-md);
+    transition: var(--transition);
+}
+
+.card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-title {
+    color: var(--primary-color);
+    font-weight: 800;
+    font-size: 22px;
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+/* 按钮样式 */
+.btn {
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--white);
+    box-shadow: var(--btn-shadow);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+}
+
+.btn-primary:active {
+    transform: scale(0.9);
+}
+
+.btn-secondary {
+    background-color: var(--gray-light);
+    color: var(--black);
+}
+
+.btn-secondary:hover {
+    background-color: var(--gray);
+}
+
+.btn-secondary:active {
+    background-color: var(--gray-active);
+    transform: scale(0.9);
+}
+
+/* 输入框样式 */
+.input {
+    border: 1px solid var(--gray);
+    border-radius: var(--border-radius);
+    padding: 6px 12px;
+    font-size: 14px;
+    transition: var(--transition);
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 2px rgba(147, 112, 219, 0.2);
+}
+
+/* 标题样式 */
+.page-title {
+    color: var(--primary-color);
+    font-size: 24px;
+    font-weight: 600;
+    padding: var(--spacing-md) 0;
+}
+
+/* 列表与项样式 */
+.list-item {
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    transition: var(--transition-fast);
+}
+
+.list-item:hover {
+    background-color: var(--white-hover);
+    cursor: pointer;
+}
+.list-item:active {
+    transform: scale(0.9);
+}
+
+.list-item:last-child {
+    border-bottom: none;
+}
+
+/* 空状态提示 */
+.empty-hint {
+    color: var(--gray-dark);
+    text-align: center;
+    padding: var(--spacing-lg);
+    font-style: italic;
+}
+
+/* 动画效果 */
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+.fade-out {
+    animation: fadeOut 0.3s ease-in-out forwards;
+}
+
+/* 渐显动画：从消失到显示 */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* 渐隐动画：从显示到消失 */
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.scale-hover {
+
+}
