@@ -1,9 +1,5 @@
 /* src/assets/css/index.css */
 :root {
-    /* 主色调（紫色系） */
-    --primary-color: #6a0dad; /* 深紫色（深色主题色） */
-    --primary-light: #c0ade9; /* 浅紫色（辅助色） */
-    --primary-dark: #4a0080; /* 暗紫色（ hover 状态） */
 
     /* 中性色 */
     --white: #ffffff;
@@ -138,7 +134,8 @@ body {
 }
 
 /* 列表与项样式 */
-.list-item {
+.list-item,
+.list-text-item {
     padding: var(--spacing-sm) 0;
     border-bottom: 1px solid var(--gray-light);
     border-radius: var(--border-radius);
@@ -153,7 +150,8 @@ body {
     transform: scale(0.9);
 }
 
-.list-item:last-child {
+.list-item:last-child,
+.list-text-item:last-child {
     border-bottom: none;
 }
 

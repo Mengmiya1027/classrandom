@@ -242,6 +242,7 @@ const addPrevScore = (delta) => {
 </script>
 
 <style scoped>
+@import url('../assets/css/mainpage.css');
 
 .page-title {
   font-size: 2em;

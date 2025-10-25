@@ -5,10 +5,15 @@ import { createPinia } from 'pinia'
 import './assets/css/index.css'
 import { createRouter, createWebHistory } from 'vue-router'
 import EditPage from './components/editpage.vue'
+import MainPage from './components/mainpage.vue'
 
 // 1. 创建 Pinia 和路由实例
 const pinia = createPinia()
 const routes = [
+    {
+        path: '/', // 根路径
+        component: MainPage // 指向主页面组件
+    },
     {
         path: '/classes/edit/:id?',
         component: EditPage
