@@ -1,5 +1,9 @@
 /* src/assets/css/index.css */
 :root {
+    /* 主色调（紫色系） */
+    --primary-color: #6a0dad; /* 深紫色（深色主题色） */
+    --primary-light: #c0ade9; /* 浅紫色（辅助色） */
+    --primary-dark: #4a0080; /* 暗紫色（ hover 状态） */
 
     /* 中性色 */
     --white: #ffffff;
@@ -16,6 +20,13 @@
     --success: #4caf50;
     --warning: #ff9800;
     --danger: #f44336;
+    --note: #2196f3;/*蓝色*/
+
+    /* 高级功能色 */
+    --success-light: #80c883;
+    --warning-light: #ffb74d;
+    --danger-light: #f8877f;
+    --note-light: #6ab8f7;
 
     /* 布局变量 */
     --spacing-xs: 4px;

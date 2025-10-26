@@ -64,6 +64,10 @@ button:focus-visible {
   margin: 0 auto;
 }
 
+.v-checkbox .v-selection-control {
+    min-height: 0 !important;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
