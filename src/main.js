@@ -13,7 +13,7 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
 const vuetify = createVuetify({
-    components, // 注册所有组件（包括 v-checkbox）
+    components: false,
     directives,
     theme: {
         defaultTheme: 'light',

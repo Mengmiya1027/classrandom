@@ -272,6 +272,7 @@ const addPrevScore = (delta) => {
   display: flex;
   justify-content: space-between;
   padding: var(--spacing-sm) var(--spacing-xs);
+  border-bottom: none;
 }
 
 .history-group {

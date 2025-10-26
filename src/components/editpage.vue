@@ -150,129 +150,130 @@
         </div>
       </div>
     </div>
-
-    <!-- 批量选择弹窗 -->
-    <transition name="fade">
-      <div class="modal-backdrop" v-if="showBatchSelect" @click="showBatchSelect = false">
-        <transition name="popup">
-          <div class="modal card" v-if="showBatchSelect" @click.stop>
-            <div class="modal-header">
-              <h3 class="modal-title card-title">批量编辑 - 选择项</h3>
-              <div class="select-all">
-                <v-checkbox
-                    v-model="selectAll"
-                    label="全选"
-                    color="primary"
-                    hide-details
-                />
-              </div>
-            </div>
-
-            <div class="modal-body">
-              <div v-for="group in store.currentClass.groups" :key="group['group-id']" class="batch-group card">
-                <div class="batch-group-header list-text-item">
+    <teleport to="body">
+      <!-- 批量选择弹窗 -->
+      <transition name="fade">
+        <div class="modal-backdrop" v-if="showBatchSelect" @click="showBatchSelect = false">
+          <transition name="popup">
+            <div class="modal card" v-if="showBatchSelect" @click.stop>
+              <div class="modal-header">
+                <h3 class="modal-title card-title">批量编辑 - 选择项</h3>
+                <div class="select-all">
                   <v-checkbox
-                      v-model="group.selected"
-                      @change="handleGroupSelect(group)"
+                      v-model="selectAll"
+                      label="全选"
                       color="primary"
                       hide-details
                   />
-                  <label :for="`group-${group['group-id']}`"><text>组 {{ group['group-id'] }}（总分：{{ calculateGroupTotal(group) }}）</text></label>
                 </div>
+              </div>
 
-                <div class="batch-students">
-                  <div v-for="student in group.students" :key="student.name" class="batch-student list-text-item">
+              <div class="modal-body">
+                <div v-for="group in store.currentClass.groups" :key="group['group-id']" class="batch-group card">
+                  <div class="batch-group-header list-text-item">
                     <v-checkbox
-                        v-model="student.selected"
+                        v-model="group.selected"
+                        @change="handleGroupSelect(group)"
                         color="primary"
                         hide-details
                     />
-                    <label :for="`student-${student.name}`">{{ student.name }}（分数：{{ student.score }}）</label>
+                    <label :for="`group-${group['group-id']}`"><text>组 {{ group['group-id'] }}（总分：{{ calculateGroupTotal(group) }}）</text></label>
                   </div>
 
-                  <!-- 其他加分项 -->
-                  <div class="batch-other list-text-item">
-                    <v-checkbox
-                        v-model="group.otherSelected"
-                        color="primary"
-                        hide-details
-                    />
-                    <label :for="`other-${group['group-id']}`">其他加分（当前：{{ group.other }}）</label>
+                  <div class="batch-students">
+                    <div v-for="student in group.students" :key="student.name" class="batch-student list-text-item">
+                      <v-checkbox
+                          v-model="student.selected"
+                          color="primary"
+                          hide-details
+                      />
+                      <label :for="`student-${student.name}`">{{ student.name }}（分数：{{ student.score }}）</label>
+                    </div>
+
+                    <!-- 其他加分项 -->
+                    <div class="batch-other list-text-item">
+                      <v-checkbox
+                          v-model="group.otherSelected"
+                          color="primary"
+                          hide-details
+                      />
+                      <label :for="`other-${group['group-id']}`">其他加分（当前：{{ group.other }}）</label>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div class="modal-footer btn-group">
-              <button class="btn btn-secondary scale-hover quit-btn" @click="showBatchSelect = false">取消</button>
-              <button class="btn btn-primary scale-hover apply-btn" @click="showBatchSettings = true; showBatchSelect = false">
-                设置
-              </button>
+              <div class="modal-footer btn-group">
+                <button class="btn btn-secondary scale-hover quit-btn" @click="showBatchSelect = false">取消</button>
+                <button class="btn btn-primary scale-hover apply-btn" @click="showBatchSettings = true; showBatchSelect = false">
+                  设置
+                </button>
+              </div>
             </div>
-          </div>
-        </transition>
-      </div>
-    </transition>
+          </transition>
+        </div>
+      </transition>
 
-    <!-- 批量设置弹窗 -->
-    <transition name="fade">
-      <div class="modal-backdrop" v-if="showBatchSettings" @click="showBatchSettings = false">
-        <transition name="popup">
-          <div class="modal card" v-if="showBatchSettings" @click.stop>
-            <div class="modal-header">
-              <h3 class="modal-title card-title">批量编辑 - 设置值</h3>
-            </div>
-
-            <div class="modal-body">
-              <div class="form-group">
-                <label class="form-label">分数：</label>
-                <input
-                    type="number"
-                    class="input form-input"
-                    v-model.number="batchSettings.score"
-                    placeholder="不修改留空"
-                    @focus="inputFocus($event)"
-                    @blur="inputBlur($event)"
-                >
+      <!-- 批量设置弹窗 -->
+      <transition name="fade">
+        <div class="modal-backdrop" v-if="showBatchSettings" @click="showBatchSettings = false">
+          <transition name="popup">
+            <div class="modal card" v-if="showBatchSettings" @click.stop>
+              <div class="modal-header">
+                <h3 class="modal-title card-title">批量编辑 - 设置值</h3>
               </div>
 
-              <div class="form-group">
-                <label class="form-label">概率：</label>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label class="form-label">分数：</label>
                   <input
                       type="number"
-                      step="10"
-                      min="0"
                       class="input form-input"
-                      :value="batchSettings.probability !== null ? (batchSettings.probability * 100).toFixed(0) : ''"
-                      @input="handleBatchProbabilityInput($event)"
+                      v-model.number="batchSettings.score"
                       placeholder="不修改留空"
                       @focus="inputFocus($event)"
                       @blur="inputBlur($event)"
-                  ><span class="percent-sign">%</span>
+                  >
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">概率：</label>
+                    <input
+                        type="number"
+                        step="10"
+                        min="0"
+                        class="input form-input"
+                        :value="batchSettings.probability !== null ? (batchSettings.probability * 100).toFixed(0) : ''"
+                        @input="handleBatchProbabilityInput($event)"
+                        placeholder="不修改留空"
+                        @focus="inputFocus($event)"
+                        @blur="inputBlur($event)"
+                    ><span class="percent-sign">%</span>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">持续时间：</label>
+                  <input
+                      type="number"
+                      min="0"
+                      class="input form-input"
+                      v-model.number="batchSettings.duration"
+                      placeholder="不修改留空"
+                      @focus="inputFocus($event)"
+                      @blur="inputBlur($event)"
+                  >
+                </div>
               </div>
 
-              <div class="form-group">
-                <label class="form-label">持续时间：</label>
-                <input
-                    type="number"
-                    min="0"
-                    class="input form-input"
-                    v-model.number="batchSettings.duration"
-                    placeholder="不修改留空"
-                    @focus="inputFocus($event)"
-                    @blur="inputBlur($event)"
-                >
+              <div class="modal-footer btn-group">
+                <button class="btn btn-secondary scale-hover quit-btn" @click="showBatchSettings = false">取消</button>
+                <button class="btn btn-primary scale-hover apply-btn" @click="applyBatchSettings">确认</button>
               </div>
             </div>
-
-            <div class="modal-footer btn-group">
-              <button class="btn btn-secondary scale-hover quit-btn" @click="showBatchSettings = false">取消</button>
-              <button class="btn btn-primary scale-hover apply-btn" @click="applyBatchSettings">确认</button>
-            </div>
-          </div>
-        </transition>
-      </div>
-    </transition>
+          </transition>
+        </div>
+      </transition>
+    </teleport>
   </div>
 </template>
 
@@ -439,15 +440,6 @@ const inputBlur = (e) => {
   e.target.classList.remove('input-focus')
 }
 
-watch([showBatchSelect, showBatchSettings], ([selectVisible, settingsVisible]) => {
-  const isAnyModalOpen = selectVisible || settingsVisible
-  const editContainer = document.querySelector('.edit-container')
-  if (editContainer) {
-    // 弹窗打开时禁止背景滚动，关闭时恢复
-    editContainer.style.overflowY = isAnyModalOpen ? 'hidden' : 'auto'
-  }
-})
-
 // 初始化
 initSelectionState()
 </script>
@@ -459,7 +451,7 @@ initSelectionState()
 ================================ */
 
 /* ====== 新的绿色全局变量 ====== */
-.edit-container.page-container {
+.edit-container.page-container,.modal {
     /* 主色调（紫色系） */
     --primary-color: #28a328; /* 深紫色（深色主题色） */
     --primary-light: #d0efe2; /* 浅绿色（辅助色） */

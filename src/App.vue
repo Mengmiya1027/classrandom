@@ -38,16 +38,22 @@ const store = useMainStore()
   transform-style: preserve-3d;
   overflow: hidden;
 }
+
+html::-webkit-scrollbar {
+  display: none;
+}
 /* 主页面样式 */
 .main-page {
   width: 100%;
   height: 100vh;
   display: flex;
-  transition: transform 0.5s ; /* 缩放动画 */
+  transition: all 0.5s ; /* 缩放动画 */
+  backface-visibility: hidden;
+  filter: blur(0);
 }
 .main-page.scaled {
   transform: scale(0.8); /* 激活时缩小到0.5倍 */
-  backdrop-filter: blur(50px);
+  filter: blur(5px);
 }
 
 /* 编辑页基础样式 */
@@ -61,6 +67,25 @@ const store = useMainStore()
   left: 50%;
   top: 50%;
   transform: translate(0, 0);
+}
+
+/* editpage.vue 中给过渡元素添加 3D 继承 */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* 关键：继承根容器的 3D 上下文 */
+  transform-style: preserve-3d;
+  perspective: inherit; /* 继承 #app 的透视值 */
+  /* 避免 z-index 层级冲突 */
+  z-index: 999;
+}
+
+/* 弹窗内容保持 3D 变换能力 */
+.modal {
+  transform-style: preserve-3d;
 }
 
 /* 过渡动画：进入/离开状态 */

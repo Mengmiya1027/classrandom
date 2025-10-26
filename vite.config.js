@@ -1,11 +1,14 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { viteSingleFile } from 'vite-plugin-singlefile' // 引入插件
+import vuetify from 'vite-plugin-vuetify'
+
 
 export default defineConfig({
     plugins: [
         vue(),
-        viteSingleFile() // 启用单文件打包插件
+        viteSingleFile(),
+        vuetify({ autoImport: true }),
     ],
     server: {
         host: '0.0.0.0',
