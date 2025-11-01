@@ -1,19 +1,26 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import './style.css'
 import App from './App.vue'
-import { createPinia } from 'pinia'
+import {createPinia} from 'pinia'
 import './assets/css/index.css'
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 import EditPage from './components/editpage.vue'
 import MainPage from './components/mainpage.vue'
 import 'vuetify/styles'
-import '@mdi/font/css/materialdesignicons.css' // 确保这行存在
+import {aliases, mdi} from 'vuetify/iconsets/mdi-svg'
 import {createVuetify} from "vuetify/framework";
 import * as directives from 'vuetify/directives'
 
 const vuetify = createVuetify({
     components: false,
     directives,
+    icons: {
+        defaultSet: 'mdi',
+        aliases,
+        sets: {
+            mdi,
+        },
+    },
     theme: {
         defaultTheme: 'light',
         themes: {
