@@ -9,7 +9,6 @@ import MainPage from './components/mainpage.vue'
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css' // 确保这行存在
 import {createVuetify} from "vuetify/framework";
-import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
 const vuetify = createVuetify({

@@ -21,7 +21,6 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 inlineDynamicImports: true, // 动态导入也内联
-                manualChunks: () => 'single.js' // 所有JS合并为一个文件
             }
         }
     }

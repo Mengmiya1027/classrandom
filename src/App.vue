@@ -3,7 +3,7 @@
     <!-- 主页面：始终显示，激活时缩放 -->
     <MainPage
         class="main-page"
-        :class="{ scaled: store.showEdit }"
+        :class="{ scaled: store.showEdit || store.showStatistics }"
         style="z-index: 1;"
     />
 
@@ -16,6 +16,17 @@
           style="z-index: 2;"
       >
       </EditPage>
+    </transition>
+
+    <!-- 统计页面：仅在需要时显示，激活时缩放 -->
+    <transition name="slide-down">
+      <StatisticsPage
+          v-if="store.showStatistics"
+          @close="store.setShowStatistics(false)"
+          class="statistics-page"
+          style="z-index: 3;"
+      >
+      </StatisticsPage>
     </transition>
   </div>
 </template>
@@ -96,14 +107,22 @@ html::-webkit-scrollbar {
   /* 3D效果：上面近下面远 */
 }
 
+.slide-down-enter-from,
+.slide-down-leave-to {
+  transform: translate(0, -110%) rotateX(-40deg); /* 完全在屏幕上方 */
+}
+
 /* 动画过程 */
 .slide-up-enter-active,
-.slide-up-leave-active {
+.slide-up-leave-active,
+.slide-down-enter-active,
+.slide-down-leave-active {
   transition: transform 0.5s ease; /* 滑行动画 */
 }
 
 /* 进入后状态：已居中（复用edit-page的默认transform） */
-.slide-up-enter-to {
+.slide-up-enter-to,
+.slide-down-enter-to {
   transform: translate(0, 0);
 }
 
