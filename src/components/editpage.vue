@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import InfoEditor from "./edit/InfoEditor.vue";
+import InfoEditor from "./edit/HistoryEditor.vue";
 
 </script>
 

@@ -477,7 +477,6 @@ initSelectionState()
 
 /* ====== 新的绿色全局变量 ====== */
 .page-content,.modal {
-  /* 主色调（紫色系） */
   --primary-color: #28a328; /* 深紫色（深色主题色） */
   --primary-light: #d0efe2; /* 浅绿色（辅助色） */
   --primary-dark: #16a34a; /* 暗绿色（ hover 状态） */

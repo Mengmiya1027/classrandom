@@ -29,6 +29,9 @@ import {
     faPlus,
     faUsersGear,
     faTrophy,
+    faClock,
+    faTrash,
+    faList
 } from '@fortawesome/free-solid-svg-icons'
 import { faVuejs } from '@fortawesome/free-brands-svg-icons'
 library.add(
@@ -49,6 +52,9 @@ library.add(
     faUsersGear,
     faTrophy,
     faUserTie,
+    faClock,
+    faTrash,
+    faList,
 )
 
 
