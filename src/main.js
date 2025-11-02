@@ -10,6 +10,47 @@ import 'vuetify/styles'
 import {aliases, mdi} from 'vuetify/iconsets/mdi-svg'
 import {createVuetify} from "vuetify/framework";
 import * as directives from 'vuetify/directives'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import {
+    faChartPie,
+    faGraduationCap,
+    faChevronCircleRight,
+    faPenToSquare,
+    faPenSquare,
+    faRandom,
+    faUser,
+    faUserTie,
+    faUsers,
+    faHistory,
+    faListCheck,
+    faXmark,
+    faMinus,
+    faPlus,
+    faUsersGear,
+    faTrophy,
+} from '@fortawesome/free-solid-svg-icons'
+import { faVuejs } from '@fortawesome/free-brands-svg-icons'
+library.add(
+    faChartPie,
+    faGraduationCap,
+    faChevronCircleRight,
+    faPenToSquare,
+    faPenSquare,
+    faRandom,
+    faVuejs,
+    faUser,
+    faUsers,
+    faHistory,
+    faListCheck,
+    faXmark,
+    faMinus,
+    faPlus,
+    faUsersGear,
+    faTrophy,
+    faUserTie,
+)
+
 
 const vuetify = createVuetify({
     components: false,
@@ -31,7 +72,7 @@ const vuetify = createVuetify({
             },
             options: {
                 checkbox: {
-                    size: '5px', /* 调整尺寸为10像素 */
+                    size: '5px', // 调整尺寸为10像素
                 },
             },
         },
@@ -62,6 +103,7 @@ const app = createApp(App)
 app.use(pinia)
 app.use(router)
 app.use(vuetify)
+app.component('font-awesome-icon', FontAwesomeIcon)
 
 // 4. 挂载应用
 app.mount('#app')

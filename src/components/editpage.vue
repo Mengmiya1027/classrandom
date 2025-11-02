@@ -3,14 +3,14 @@
     <!-- 标题栏 -->
     <div class="page-header card fade-in">
       <h1 class="page-title">
-        <i class="fa-solid fa-pen-to-square"></i> 编辑抽取与统计信息
+        <font-awesome-icon icon="fa-solid fa-pen-to-square"/> 编辑抽取与统计信息
       </h1>
       <div class="header-actions btn-group">
         <button class="btn btn-secondary scale-hover" @click="showBatchSelect = true">
-          <i class="fa-solid fa-list-check"></i> 批量编辑
+          <font-awesome-icon icon="fa-solid fa-list-check" /> 批量编辑
         </button>
         <button class="btn btn-secondary scale-hover" @click="$emit('close')">
-          <i class="fa-solid fa-xmark"></i> 关闭
+          <font-awesome-icon icon="fa-solid fa-xmark" /> 关闭
         </button>
       </div>
     </div>
@@ -58,7 +58,7 @@
               <div class="table-col col-score">
                 <div class="edit-control">
                   <button class="btn btn-sm btn-secondary scale-hover minus-btn" @click="updateStudentScore(student, -1)">
-                    <i class="fa-solid fa-minus"></i>
+                    <font-awesome-icon icon="fa-solid fa-minus" />
                   </button>
                   <input
                       type="number"
@@ -68,7 +68,7 @@
                       @blur="inputBlur($event)"
                   >
                   <button class="btn btn-sm btn-secondary scale-hover add-btn" @click="updateStudentScore(student, 1)">
-                    <i class="fa-solid fa-plus"></i>
+                    <font-awesome-icon icon="fa-solid fa-plus" />
                   </button>
                 </div>
               </div>
@@ -77,7 +77,7 @@
               <div class="table-col col-prob">
                 <div class="edit-control">
                   <button class="btn btn-sm btn-secondary scale-hover minus-btn" @click="updateStudentProbability(student, -0.1)">
-                    <i class="fa-solid fa-minus"></i>
+                    <font-awesome-icon icon="fa-solid fa-minus" />
                   </button>
                   <input
                       type="number"
@@ -92,7 +92,7 @@
                   >
                   <span class="percent-sign">%</span>
                   <button class="btn btn-sm btn-secondary scale-hover add-btn" @click="updateStudentProbability(student, 0.1)">
-                    <i class="fa-solid fa-plus"></i>
+                    <font-awesome-icon icon="fa-solid fa-plus" />
                   </button>
                 </div>
               </div>
@@ -101,7 +101,7 @@
               <div class="table-col col-duration">
                 <div class="edit-control">
                   <button class="btn btn-sm btn-secondary scale-hover minus-btn" @click="updateStudentDuration(student, -1)">
-                    <i class="fa-solid fa-minus"></i>
+                    <font-awesome-icon icon="fa-solid fa-minus" />
                   </button>
                   <input
                       type="number"
@@ -112,7 +112,7 @@
                       @blur="inputBlur($event)"
                   >
                   <button class="btn btn-sm btn-secondary scale-hover add-btn" @click="updateStudentDuration(student, 1)">
-                    <i class="fa-solid fa-plus"></i>
+                    <font-awesome-icon icon="fa-solid fa-plus" />
                   </button>
                 </div>
               </div>
@@ -128,7 +128,7 @@
               <div class="table-col col-score">
                 <div class="edit-control">
                   <button class="btn btn-sm btn-secondary scale-hover minus-btn" @click="group.other--">
-                    <i class="fa-solid fa-minus"></i>
+                    <font-awesome-icon icon="fa-solid fa-minus" />
                   </button>
                   <input
                       type="number"
@@ -138,7 +138,7 @@
                       @blur="inputBlur($event)"
                   >
                   <button class="btn btn-sm btn-secondary scale-hover add-btn" @click="group.other++">
-                    <i class="fa-solid fa-plus"></i>
+                    <font-awesome-icon icon="fa-solid fa-plus" />
                   </button>
                 </div>
               </div>
@@ -164,6 +164,7 @@
                       label="全选"
                       color="primary"
                       hide-details
+                      @change="handleSelectAllClick"
                   />
                 </div>
               </div>
@@ -173,7 +174,7 @@
                   <div class="batch-group-header list-text-item">
                     <v-checkbox
                         v-model="group.selected"
-                        @change="handleGroupSelect(group)"
+                        @change="handleGroupClick(group)"
                         color="primary"
                         hide-details
                     />
@@ -186,6 +187,7 @@
                           v-model="student.selected"
                           color="primary"
                           hide-details
+                          @change="updateGroupAndSelectAllStatus(group)"
                       />
                       <label :for="`student-${student.name}`">{{ student.name }}（分数：{{ student.score }}）</label>
                     </div>
@@ -196,6 +198,7 @@
                           v-model="group.otherSelected"
                           color="primary"
                           hide-details
+                          @change="updateGroupAndSelectAllStatus(group)"
                       />
                       <label :for="`other-${group['group-id']}`">其他加分（当前：{{ group.other }}）</label>
                     </div>
@@ -205,7 +208,7 @@
 
               <div class="modal-footer btn-group">
                 <button class="btn btn-secondary scale-hover quit-btn" @click="showBatchSelect = false">取消</button>
-                <button class="btn btn-primary scale-hover apply-btn" @click="showBatchSettings = true; showBatchSelect = false">
+                <button class="btn btn-primary scale-hover apply-btn" @click="showBatchSettings = true; showBatchSelect = false" :disabled="!hasSelectedItems">
                   设置
                 </button>
               </div>
@@ -279,7 +282,8 @@
 
 <script setup>
 import { useMainStore } from '../stores/index.js'
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 const store = useMainStore()
 const emit = defineEmits(['close'])
@@ -309,51 +313,82 @@ const initSelectionState = () => {
       student.selected = false
     })
   })
-  selectAll.value = false
+  selectAll.value = false  // 初始全选状态为未选中
 }
 
-// 处理全选逻辑
-watch(selectAll, (newVal) => {
-  store.currentClass.groups.forEach(group => {
-    group.selected = newVal
-    group.otherSelected = newVal
-    group.students.forEach(student => {
-      student.selected = newVal
-    })
+watch(showBatchSelect, (newVal) => {
+  if (newVal) {  // 当弹窗从关闭变为打开时
+    initSelectionState()  // 清除所有选择状态
+  }
+})
+
+
+const hasSelectedItems = computed(() => {
+  // 遍历所有组检查是否有选中项
+  return store.currentClass.groups.some(group => {
+    // 组本身被选中
+    if (group.selected) return true
+    // 其他加分项被选中
+    if (group.otherSelected) return true
+    // 组内有学生被选中
+    if (group.students.some(student => student.selected)) return true
+    // 以上都没有
+    return false
   })
 })
 
-// 处理组选择逻辑
-const handleGroupSelect = (group) => {
+// 标志：是否是用户主动点击全选按钮（用于区分被动更新）
+const isUserSelectAll = ref(false)
+
+// 处理全选按钮点击（仅用户主动点击时触发）
+const handleSelectAllClick = () => {
+  isUserSelectAll.value = true
+  const isSelected = selectAll.value
+
+  // 只有用户主动点击时才更新所有选项
+  store.currentClass.groups.forEach(group => {
+    group.selected = isSelected
+    group.otherSelected = isSelected
+    group.students.forEach(student => {
+      student.selected = isSelected
+    })
+  })
+
+  isUserSelectAll.value = false
+}
+
+// 处理组按钮点击
+const handleGroupClick = (group) => {
   const isSelected = group.selected
+
+  // 组点击只影响本组成员
   group.students.forEach(student => {
     student.selected = isSelected
   })
   group.otherSelected = isSelected
 
-  // 更新全选状态
+  // 更新全选状态（被动更新，只改状态不影响其他）
   updateSelectAllStatus()
 }
 
-// 更新全选状态
+// 当学生或其他加分项变化时，更新所在组和全选状态
+const updateGroupAndSelectAllStatus = (group) => {
+  // 被动更新组状态：组内所有学生和其他加分都选中时，组才选中
+  const allStudentsSelected = group.students.every(student => student.selected)
+  group.selected = allStudentsSelected && group.otherSelected
+
+  // 被动更新全选状态：所有组都选中时，全选才选中
+  updateSelectAllStatus()
+}
+
+// 被动更新全选状态（只更新状态，不操作其他选项）
 const updateSelectAllStatus = () => {
-  let allSelected = true
-  store.currentClass.groups.forEach(group => {
-    if (!group.selected) {
-      allSelected = false
-      return
-    }
-    group.students.forEach(student => {
-      if (!student.selected) {
-        allSelected = false
-        return
-      }
-    })
-    if (!group.otherSelected) {
-      allSelected = false
-    }
-  })
-  selectAll.value = allSelected
+  // 避免在用户主动操作全选时触发
+  if (isUserSelectAll.value) return
+
+  // 检查所有组是否都处于选中状态
+  const allGroupsSelected = store.currentClass.groups.every(group => group.selected)
+  selectAll.value = allGroupsSelected
 }
 
 // 应用批量设置
@@ -629,7 +664,6 @@ initSelectionState()
 /* ====== 其他加分行 ====== */
 .other-score-row {
   background-color: #f3f4f6;
-  font-style: italic;
 }
 
 /* ====== 编辑控件 ====== */
@@ -650,11 +684,13 @@ initSelectionState()
 .edit-control .add-btn {
   background-color: var(--note);
   color: white;
+  padding: 0 4px;
 }
 
 .edit-control .minus-btn {
   background-color: var(--warning);
   color: white;
+  padding: 0 4px;
 }
 
 .edit-control .minus-btn:hover {
@@ -833,10 +869,16 @@ initSelectionState()
   font-weight: bold;
 }
 
-/* 原有样式保持不变，添加以下新样式 */
 .percent-sign {
   margin: 0 5px;
   color: #4b5563;
+  font-weight: bolder;
+  font-size: 20px;
+}
+
+.edit-control > .percent-sign{
+  margin: 0 3px;
+  font-weight: bold ;
 }
 
 .col-prob .edit-control {
@@ -876,6 +918,17 @@ initSelectionState()
   justify-content: center;
   text-align: center;
   font-size: 18px;
+}
+
+.apply-btn:disabled {
+  background-color: var(--primary-light);
+  cursor: not-allowed;
+}
+
+.apply-btn:disabled:hover,.apply-btn:disabled:active {
+  background-color: var(--primary-light);
+  transform: none;
+  box-shadow: none;
 }
 
 @keyframes fadeIn {

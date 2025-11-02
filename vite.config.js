@@ -13,7 +13,11 @@ export default defineConfig({
             autoImport: true, // Vuetify 按需导入
             styles: 'expose' // 仅打包使用过的样式
         }),
-        visualizer({ open: true }),
+        visualizer({
+            open: true,  // 构建后自动打开报告
+            gzipSize: true,  // 显示gzip压缩后的体积
+            brotliSize: true  // 显示brotli压缩后的体积
+        })
     ],
     server: {
         host: '0.0.0.0',

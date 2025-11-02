@@ -2,13 +2,13 @@
   <div class="main-container">
     <!-- 标题 -->
     <h1 class="page-title">
-      <i class="fa-solid fa-graduation-cap"></i> 课堂随机点名Pro
+      <font-awesome-icon icon="fa-solid fa-graduation-cap"/> 课堂随机点名Pro
     </h1>
 
     <!-- 左侧：抽取历史卡片 -->
     <div class="history-card card" ref="historyList">
       <h3 class="card-title">
-        <i class="fa-solid fa-history"></i> 抽取历史
+        <font-awesome-icon icon="fa-solid fa-history"/> 抽取历史
       </h3>
       <div class="history-list">
         <p v-if="store.drawHistory.length === 0" class="empty-hint">暂无记录</p>
@@ -33,7 +33,7 @@
 
               @click="store.selectClass(className)"
           >
-            <i class="fa-solid fa-chevron-circle-right"></i>
+            <font-awesome-icon icon="fa-solid fa-chevron-circle-right"/>
             {{ className }}
           </button>
         </div>
@@ -65,10 +65,10 @@
         <!-- 统计/编辑按钮 -->
         <div class="action-buttons">
           <button class="btn btn-primary" @click="store.setShowStatistics(true)">
-            <i class="fa-solid fa-chart-pie"></i> 统计
+            <font-awesome-icon icon="fa-solid fa-chart-pie"/> 统计
           </button>
           <button class="btn btn-secondary" @click="store.setShowEdit(true)">
-            <i class="fa-solid fa-pen-to-square"></i> 编辑
+            <font-awesome-icon icon="fa-solid fa-pen-to-square"/> 编辑
           </button>
         </div>
       </div>
@@ -98,18 +98,21 @@
       <!-- 抽取控制区 -->
       <div class="draw-controls card">
         <button class="draw-btn btn btn-primary" @click="startDraw" :disabled="!store.currentClass">
-          <i class="fa-solid fa-random"></i> 开始抽取
+          <font-awesome-icon icon="fa-solid fa-random"/> 开始抽取
         </button>
-        <select class="input mode-select" v-model="drawMode">
-          <option value="normal">普通模式</option>
-          <option value="group-fair">小组公平模式</option>
-          <option value="personal-fair">个人公平模式</option>
-        </select>
+        <v-select
+            v-model="drawMode"
+            :items="drawModeOptions"
+            class="mode-select"
+            :disabled="!store.currentClass"
+            density="comfortable"
+            variant="solo-filled"
+        />
       </div>
 
       <!-- 底部版权信息 -->
       <div class="footer">
-        <p>Created with <i class="fa-brands fa-vuejs" style="color:forestgreen;"></i> Vue , made by <a href="https://github.com/Mengmiya1027" target="_blank" style="color: skyblue">Mengmiya1027</a></p>
+        <p>Created with <font-awesome-icon icon="fa-brands fa-vuejs" style="color:forestgreen;"></font-awesome-icon> Vue , made by <a href="https://github.com/Mengmiya1027" target="_blank" style="color: skyblue">Mengmiya1027</a></p>
       </div>
     </div>
     <transition name="popup">
@@ -117,7 +120,7 @@
           v-if="store.adjustmentPopup.show"
           class="adjustment-popup"
       >
-        <i class="fa-solid" :class="store.adjustmentPopup.type === 'group' ? 'fa-users' : 'fa-user'"></i>
+        <font-awesome-icon :icon="store.adjustmentPopup.type === 'group' ? 'fa-solid fa-users' : 'fa-solid fa-user'"></font-awesome-icon>
         <pre class="popup-message">{{ store.adjustmentPopup.message }}</pre>
       </div>
     </transition>
@@ -141,6 +144,13 @@ const formatTime = (time) => {
 }
 
 window.store = store
+
+// 定义选择框选项
+const drawModeOptions = [
+  { value: 'normal', title: '普通模式' },
+  { value: 'group-fair', title: '小组公平模式' },
+  { value: 'personal-fair', title: '个人公平模式' }
+]
 
 const handleAnimationEnd = () => {
   if (store.adjustmentPopup.isFadingOut) {
@@ -252,7 +262,6 @@ const addPrevScore = (delta) => {
   padding: var(--spacing-md);
   position: relative;
   min-height: 100vh;
-  font-family: 'SourceHanSansSC', sans-serif;
 }
 
 /* 左侧历史卡片 */
@@ -449,17 +458,15 @@ const addPrevScore = (delta) => {
   display: inline-flex;
   justify-content: center;
   text-align: center;
-  width: 250px;
-  height: 60px;
+  width: 200px;
+  height: 50px;
   font-weight: 1000;
   font-size: 25px;
 }
 
 .mode-select {
   text-align: center;
-  height: 60px;
-  font-weight: 500;
-  font-size: 20px;
+  height: 100%;
 }
 
 .draw-controls {

@@ -3,19 +3,19 @@
     <!-- 标题栏 -->
     <div class="page-header card fade-in">
       <h1 class="page-title">
-        <i class="fa-solid fa-chart-pie"></i> 统计信息
+        <font-awesome-icon icon="fa-solid fa-chart-pie"/> 统计信息
       </h1>
 
       <!-- 班级信息 -->
       <div v-if="store.currentClass" class="class-info">
         <h2 class="section-title">
-          <i class="fa-solid fa-users-gear"></i> {{ store.currentClass['class-name'] }} 统计结果
+          <font-awesome-icon icon="fa-solid fa-users-gear"/> {{ store.currentClass['class-name'] }} 统计结果
         </h2>
       </div>
 
       <div class="header-actions btn-group">
         <button class="btn btn-secondary scale-hover" @click="store.setShowStatistics(false)">
-          <i class="fa-solid fa-xmark"></i> 关闭
+          <font-awesome-icon icon="fa-solid fa-xmark"/> 关闭
         </button>
       </div>
     </div>
@@ -27,7 +27,7 @@
       <!-- 小组排名 -->
       <div class="statistics-card card fade-in">
         <h3 class="card-title">
-          <i class="fa-solid fa-trophy"></i> 小组总分排名
+          <font-awesome-icon icon="fa-solid fa-trophy"/> 小组总分排名
         </h3>
 
         <!-- 前三名小组（考虑并列） -->
@@ -65,7 +65,7 @@
         <!-- 学生分数排名 -->
         <div class="statistics-card card fade-in">
           <h3 class="card-title">
-            <i class="fa-solid fa-user-tie"></i> 学生总分排名
+             <font-awesome-icon icon="fa-solid fa-user-tie"/> 学生总分排名
           </h3>
 
           <div class="rank-list">
@@ -75,12 +75,13 @@
               <div class="rank-value">{{ student.score }}</div>
             </div>
           </div>
+          <span class="empty-tip" v-if="rankedStudents.length === 0">（无）</span>
         </div>
 
         <!-- 学生抽取次数排名 -->
         <div class="statistics-card card fade-in">
           <h3 class="card-title">
-            <i class="fa-solid fa-history"></i> 学生被抽取次数排名
+             <font-awesome-icon icon="fa-solid fa-history"/> 学生被抽取次数排名
           </h3>
 
           <!-- 所有学生抽取次数列表（不使用top-group样式） -->
@@ -91,6 +92,7 @@
               <div class="rank-value">被抽取: {{ student.drawCount }}次</div>
             </div>
           </div>
+          <span class="empty-tip" v-if="rankedDrawStudents.length === 0">（无）</span>
         </div>
       </div>
     </div>
@@ -100,6 +102,7 @@
 <script setup>
 import { useMainStore } from '../stores/index.js'
 import { computed } from 'vue'
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 const store = useMainStore()
 
@@ -258,6 +261,10 @@ const getRankClass = (rank) => {
 .header-actions {
   display: flex;
   gap: var(--spacing-sm); /* 多个按钮时的间距（当前只有一个按钮，可留作扩展） */
+}
+
+.header-actions .btn {
+  font-size: 16px;
 }
 
 .details-card {
@@ -443,6 +450,13 @@ const getRankClass = (rank) => {
   background-color: var(--gray-light);
 }
 
+.empty-tip {
+  display: flex;
+  font-size: 18px;
+  color: var(--gray-dark);
+  justify-content: center;
+}
+
 .rank-number {
   width: 50px;
   text-align: center;
@@ -487,7 +501,7 @@ const getRankClass = (rank) => {
   gap: var(--spacing-md);
   color: var(--gray-dark);
   font-size: 0.9em;
-  flex: 1;
+  flex: 0.5;
 }
 
 /* 动画效果 */

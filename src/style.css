@@ -1,5 +1,5 @@
 :root {
-  font-family: 'SourceHanSansSC', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -28,13 +28,11 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  font-family: 'SourceHanSansSC', sans-serif;
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1;
-  font-family: 'CangErShuYuanTi', sans-serif;
 }
 
 button {
@@ -79,21 +77,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
-
-@font-face {
-    font-family: 'CangErShuYuanTi';
-    src: url('./assets/fonts/CangErShuYuanTiW04-2.ttf') format('truetype'); /* 路径根据实际存放位置调整 */
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap; /* 优化字体加载体验 */
-}
-
-
-@font-face {
-    font-family: 'SourceHanSansSC';
-    src: url('./assets/fonts/SourceHanSansSC-Regular-2.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
 }

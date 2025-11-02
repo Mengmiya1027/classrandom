@@ -103,13 +103,13 @@ html::-webkit-scrollbar {
 /* 初始状态（进入前）：在屏幕下方 */
 .slide-up-enter-from,
 .slide-up-leave-to {
-  transform: translate(0, 110%) rotateX(-40deg); /* 完全在屏幕下方 */
+  transform: translate(0, 100%) rotateX(-90deg); /* 完全在屏幕下方 */
   /* 3D效果：上面近下面远 */
 }
 
 .slide-down-enter-from,
 .slide-down-leave-to {
-  transform: translate(0, -110%) rotateX(-40deg); /* 完全在屏幕上方 */
+  transform: translate(0, -110%) rotateX(-90deg); /* 完全在屏幕上方 */
 }
 
 /* 动画过程 */

@@ -99,11 +99,16 @@ body {
     box-shadow: var(--btn-shadow);
 }
 
-.btn-primary:hover {
+.btn-primary:disabled {
+    filter: grayscale(25%);
+    cursor: not-allowed;
+}
+
+.btn-primary:not(:disabled):hover {
     background-color: var(--primary-dark);
 }
 
-.btn-primary:active {
+.btn-primary:not(:disabled):active {
     transform: scale(0.9);
 }
 
@@ -112,11 +117,16 @@ body {
     color: var(--black);
 }
 
-.btn-secondary:hover {
+.btn-secondary:disabled {
+    background-color: var(--white-hover);
+    cursor: not-allowed;
+}
+
+.btn-secondary:not(:disabled):hover {
     background-color: var(--gray);
 }
 
-.btn-secondary:active {
+.btn-secondary:not(:disabled):active {
     background-color: var(--gray-active);
     transform: scale(0.9);
 }
@@ -172,6 +182,50 @@ body {
     text-align: center;
     padding: var(--spacing-lg);
     font-style: italic;
+}
+
+.v-select__selection-text {
+    font-weight: 500;
+    font-size: 20px;
+}
+
+.v-field {
+    border-radius: 12px;
+    height: 100%;
+    box-shadow: none;
+}
+
+.v-menu > .v-overlay__content.v-select__content {
+    border-radius: 8px !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.v-list-item {
+    border-radius: 4px !important;
+    margin: var(--spacing-xs);
+    overflow: hidden;
+    min-height: 40px !important;
+}
+
+.v-list {
+    padding: 2px;
+}
+
+.v-list-item-title {
+    font-size: 18px;
+}
+
+.v-list-item.rounded-0 {
+    border-radius: 8px !important;
+}
+
+.v-field__input {
+    min-height: 40px !important;
+    padding: 6px 0 6px 8px !important;
+}
+
+.v-input__details {
+    display: none;
 }
 
 /* 动画效果 */
