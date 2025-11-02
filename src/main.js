@@ -87,7 +87,7 @@ const routes = [
         component: MainPage // 指向主页面组件
     },
     {
-        path: '/classes/edit/:id?',
+        path: '/edit/:id?',
         component: EditPage
     },
 ]

@@ -7,26 +7,24 @@
         style="z-index: 1;"
     />
 
-    <!-- 用transition组件包裹EditPage，强制触发动画 -->
+    <!-- 编辑页 -->
     <transition name="slide-up">
       <EditPage
           v-if="store.showEdit"
           @close="store.setShowEdit(false)"
           class="edit-page"
           style="z-index: 2;"
-      >
-      </EditPage>
+      />
     </transition>
 
-    <!-- 统计页面：仅在需要时显示，激活时缩放 -->
+    <!-- 统计页 -->
     <transition name="slide-down">
       <StatisticsPage
           v-if="store.showStatistics"
           @close="store.setShowStatistics(false)"
           class="statistics-page"
           style="z-index: 3;"
-      >
-      </StatisticsPage>
+      />
     </transition>
   </div>
 </template>
