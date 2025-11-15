@@ -57,8 +57,9 @@
                     class="input form-input"
                     v-model.number="student.score"
                     @focus="inputFocus($event)"
-                    @blur="inputBlur($event)"
+                    @blur="handleInputBlur(student, 'score', 0, $event)"
                 >
+
                 <button class="btn btn-sm btn-secondary scale-hover add-btn" @click="updateStudentScore(student, 1)">
                   <font-awesome-icon icon="fa-solid fa-plus" />
                 </button>
@@ -80,7 +81,7 @@
                     :value="(student.probability * 100).toFixed(0)"
                     @input="handleProbabilityInput(student, $event)"
                     @focus="inputFocus($event)"
-                    @blur="inputBlur($event)"
+                    @blur="handleInputBlur(student, 'probability', 1, $event)"
                 >
                 <span class="percent-sign">%</span>
                 <button class="btn btn-sm btn-secondary scale-hover add-btn" @click="updateStudentProbability(student, 0.1)">
@@ -97,11 +98,11 @@
                 </button>
                 <input
                     type="number"
-                    min="0"
+                    min="-1"
                     class="input form-input"
                     v-model.number="student.duration"
                     @focus="inputFocus($event)"
-                    @blur="inputBlur($event)"
+                    @blur="handleInputBlur(student, 'duration', 0, $event)"
                 >
                 <button class="btn btn-sm btn-secondary scale-hover add-btn" @click="updateStudentDuration(student, 1)">
                   <font-awesome-icon icon="fa-solid fa-plus" />
@@ -127,7 +128,7 @@
                     class="input form-input"
                     v-model.number="group.other"
                     @focus="inputFocus($event)"
-                    @blur="inputBlur($event)"
+                    @blur="handleInputBlur(group, 'other', 0, $event)"
                 >
                 <button class="btn btn-sm btn-secondary scale-hover add-btn" @click="group.other++">
                   <font-awesome-icon icon="fa-solid fa-plus" />
@@ -226,6 +227,7 @@
                     class="input form-input"
                     v-model.number="batchSettings.score"
                     placeholder="不修改留空"
+                    @input="handleBatchDefaultInput('score', $event)"
                     @focus="inputFocus($event)"
                     @blur="inputBlur($event)"
                 >
@@ -250,12 +252,13 @@
                 <label class="form-label">持续时间：</label>
                 <input
                     type="number"
-                    min="0"
+                    min="-1"
                     class="input form-input"
                     v-model.number="batchSettings.duration"
                     placeholder="不修改留空"
                     @focus="inputFocus($event)"
                     @blur="inputBlur($event)"
+                    @input="handleBatchDefaultInput('duration', $event)"
                 >
               </div>
             </div>
@@ -271,7 +274,7 @@
   </teleport>
 </template>
 
-<script setup lang="ts">
+<script setup lang="js">
 import { useMainStore } from '../../stores'
 import { ref, computed, watch } from 'vue'
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
@@ -283,6 +286,28 @@ const calculateGroupTotal = (group) => {
   const studentScores = group.students.reduce((sum, student) => sum + (student.score || 0), 0)
   return studentScores + (group.other || 0)
 }
+
+const handleInputBlur = (target, prop, defaultValue, event) => {
+  inputBlur(event);
+  const inputElement = event.target;
+  const value = target[prop];
+
+  // 处理分数和持续时间空值
+  if (prop === 'score' || prop === 'duration') {
+    if (value === '' || value === null || value === undefined || isNaN(value)) {
+      target[prop] = defaultValue;
+    }
+  }
+  // 处理概率空值（用户完成输入后）
+  else if (prop === 'probability') {
+    // 输入框为空时，恢复默认值100%
+    if (inputElement.value.trim() === '' || value === null || value === undefined || isNaN(value)) {
+      target[prop] = 1; // 100%对应小数1
+      inputElement.value = '100'; // 同步更新输入框显示
+    }
+  }
+};
+
 
 // 批量编辑相关状态
 const showBatchSelect = ref(false)
@@ -431,23 +456,37 @@ const updateStudentProbability = (student, delta) => {
 
 // 处理概率输入框变化
 const handleProbabilityInput = (student, event) => {
-  const value = Number(event.target.value)
-  if (!isNaN(value)) {
-    const clamped = Math.max(0, Math.min(100, value))
-    student.probability = clamped / 100
+  const inputValue = event.target.value.trim();
+  // 只处理非空数字，空值留到失焦时处理
+  if (inputValue !== '') {
+    const value = Number(inputValue);
+    const clamped = Math.max(0, value);
+    student.probability = clamped / 100;
   }
-}
+  // 空值不做实时处理，保持输入框为空状态
+};
 
 // 处理批量概率输入（转换为小数存储）
 const handleBatchProbabilityInput = (event) => {
-  const value = Number(event.target.value)
-  if (isNaN(value)) {
-    batchSettings.value.probability = null
-  } else {
-    const clamped = Math.max(0, value)// 修改：只需要保证大于0
-    batchSettings.value.probability = clamped / 100
+  const inputValue = event.target.value.trim();
+  if (inputValue === '') {
+    batchSettings.value.probability = null;
+    return;
   }
-}
+  // 非空数字转换（输入框限制为数字）
+  const clamped = Math.max(0, Number(inputValue));
+  batchSettings.value.probability = clamped / 100;
+};
+
+const handleBatchDefaultInput = (field, event) => {
+  const inputValue = event.target.value.trim();
+  if (inputValue === '') {
+    batchSettings.value[field] = null;
+    return;
+  }
+  batchSettings.value[field] = clamped;
+};
+
 
 // 学生持续时间更新（每次增减1）
 const updateStudentDuration = (student, delta) => {

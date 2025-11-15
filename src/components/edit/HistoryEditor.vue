@@ -360,7 +360,7 @@ const saveHistory = () => {
 
 <style scoped>
 .history-editor-container {
-  padding: var(--spacing-md);
+  padding: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
   --primary-color: #28a328; /* 深紫色（深色主题色） */
   --primary-light: #d0efe2; /* 浅绿色（辅助色） */
   --primary-dark: #16a34a; /* 暗绿色（ hover 状态） */
@@ -384,9 +384,13 @@ const saveHistory = () => {
 
 .history-header {
   display: flex;
-  font-weight: bold;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-bottom: 2px solid var(--primary-color);
+  background-color: #f1f3f8;
+  font-weight: 600;
+  font-size: 16px;
+  color: #4b5563;
+  padding: 10px 14px;
+  border-bottom: 2px solid #e5e7eb;
+  border-radius: var(--border-radius);
   margin-bottom: var(--spacing-sm);
 }
 
