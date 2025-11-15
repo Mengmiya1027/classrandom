@@ -31,7 +31,8 @@ import {
     faTrophy,
     faClock,
     faTrash,
-    faList
+    faList,
+    faRefresh
 } from '@fortawesome/free-solid-svg-icons'
 import { faVuejs } from '@fortawesome/free-brands-svg-icons'
 library.add(
@@ -55,6 +56,7 @@ library.add(
     faClock,
     faTrash,
     faList,
+    faRefresh
 )
 
 

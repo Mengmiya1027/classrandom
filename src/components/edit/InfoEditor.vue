@@ -8,9 +8,22 @@
       <button class="btn btn-secondary scale-hover" @click="showBatchSelect = true">
         <font-awesome-icon icon="fa-solid fa-list-check" /> 批量编辑
       </button>
+      <button class="btn btn-secondary scale-hover" @click="handleRefresh" :disabled="isLoading">
+        <font-awesome-icon icon="fa-solid fa-refresh" :spin="isLoading" />刷新
+      </button>
     </div>
+
+    <v-skeleton-loader
+        v-for="group in store.currentClass.groups"
+        v-if="isLoading"
+        type="table"
+        class="mx-auto fade-in loader"
+        width="100%"
+        height="400"
+    ></v-skeleton-loader>
+
     <!-- 数据表格 -->
-    <div class="data-table">
+    <div class="data-table" v-else>
       <!-- 组列表 -->
       <div v-for="group in store.currentClass.groups" :key="group['group-id']" class="group-wrapper card fade-in">
         <!-- 表头 -->
@@ -281,6 +294,32 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 const store = useMainStore()
 defineEmits(['close']);
+const isLoading = ref(false)
+
+// 刷新处理
+const handleRefresh = async () => {
+  // 显示加载状态
+  isLoading.value = true
+
+  try {
+    // 把pinia中的实时数据存储到currentData
+    const currentData = JSON.parse(JSON.stringify(store.currentClass))
+
+    // 清空缓存（假设store中有清空缓存的方法，如果没有可以根据实际情况实现）
+    if (store.clearCache) {
+      store.clearCache()
+    }
+    store.currentClass = JSON.parse(JSON.stringify(currentData))
+  } catch (e) {
+    console.error('刷新数据失败:', e)
+  } finally {
+    // 隐藏加载状态
+    setTimeout(() => {
+      isLoading.value = false
+    }, 2000) // 延迟隐藏，让用户看到加载动画
+  }
+}
+
 // 计算小组总分
 const calculateGroupTotal = (group) => {
   const studentScores = group.students.reduce((sum, student) => sum + (student.score || 0), 0)
@@ -557,6 +596,13 @@ initSelectionState()
   transform: scale(0.95);
 }
 
+/* 骨架屏容器样式 */
+.v-skeleton-loader {
+  margin-top: 1rem;
+  border-radius: 14px;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
+}
+
 /* ====== 数据表格 ====== */
 .data-table {
   width: 100%;
@@ -638,6 +684,10 @@ initSelectionState()
   align-items: center;
   gap: 6px;
   font-size: 18px;
+}
+
+.loader {
+  overflow: hidden;
 }
 
 /* ====== 学生行 ====== */
