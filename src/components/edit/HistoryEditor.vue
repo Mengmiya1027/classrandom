@@ -384,6 +384,16 @@ const saveHistory = () => {
   justify-content: space-between;
 }
 
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
 .history-header {
   display: flex;
   background-color: #f1f3f8;
@@ -451,8 +461,12 @@ const saveHistory = () => {
 }
 
 .add-history-btn {
-  font-size: 22px;
+  font-size: 20px;
+  padding: 5px;
+  margin-right: 0;
   font-weight: bold;
+  min-width: 15vw;
+  justify-content: center;
 }
 
 .form-group {
@@ -462,6 +476,7 @@ const saveHistory = () => {
 
 .form-actions {
   padding: var(--spacing-xs);
+  padding-bottom: 0;
 }
 
 .empty-hint {

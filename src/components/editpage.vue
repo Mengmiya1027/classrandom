@@ -38,9 +38,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import InfoEditor from "./edit/InfoEditor.vue";
-import HistoryEditor from "./edit/HistoryEditor.vue";
+import {defineAsyncComponent, ref} from 'vue'
+
+const InfoEditor = defineAsyncComponent(() => import('./edit/InfoEditor.vue'))
+const HistoryEditor = defineAsyncComponent(() => import('./edit/HistoryEditor.vue'))
 
 // 活跃选项卡
 const activeTab = ref('info')
@@ -74,6 +75,13 @@ const activeTab = ref('info')
   padding: var(--spacing-xs) var(--spacing-lg);
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
   margin-bottom: var(--spacing-lg);
+}
+
+.btn-group .btn {
+  font-size: 16px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
 .page-title {

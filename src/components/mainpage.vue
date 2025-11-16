@@ -215,7 +215,7 @@ const getGroupTotal = (group) => {
   return studentScores + group.other
 }
 
-// 模拟抽取（后续替换为真实逻辑）
+// 模拟抽取
 const startDraw = () => {
   if (!store.currentClass) return;
   // 调用store的抽取方法（传入当前模式）

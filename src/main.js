@@ -32,7 +32,8 @@ import {
     faClock,
     faTrash,
     faList,
-    faRefresh
+    faRefresh,
+    faLightbulb
 } from '@fortawesome/free-solid-svg-icons'
 import { faVuejs } from '@fortawesome/free-brands-svg-icons'
 library.add(
@@ -56,9 +57,9 @@ library.add(
     faClock,
     faTrash,
     faList,
-    faRefresh
+    faRefresh,
+    faLightbulb
 )
-
 
 const vuetify = createVuetify({
     components: false,

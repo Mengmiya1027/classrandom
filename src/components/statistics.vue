@@ -290,8 +290,7 @@ const getRankClass = (rank) => {
   left: 0;
   width: 100%;
   min-height: 100%;
-  background-color: rgba( 255 , 255 , 255 , 0.5 );
-  backdrop-filter: blur(20px);
+  background-color: #f6f7fb;
   padding: var(--spacing-md);
   z-index: 3;
   overflow-y: auto;

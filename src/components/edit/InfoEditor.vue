@@ -1,18 +1,23 @@
 <template>
   <!-- 主要内容区 -->
   <div class="page-content">
-    <div class="header-actions card">
-      <h1 class="page-title">
-        <font-awesome-icon icon="fa-solid fa-pen-to-square"/> 编辑学生/小组信息
-      </h1>
-      <button class="btn btn-secondary scale-hover" @click="showBatchSelect = true">
-        <font-awesome-icon icon="fa-solid fa-list-check" /> 批量编辑
-      </button>
-      <button class="btn btn-secondary scale-hover" @click="handleRefresh" :disabled="isLoading">
-        <font-awesome-icon icon="fa-solid fa-refresh" :spin="isLoading" />刷新
-      </button>
+    <div class="page-header">
+      <div class="header-actions card">
+        <h1 class="page-title">
+          <font-awesome-icon icon="fa-solid fa-pen-to-square"/> 编辑学生/小组信息
+        </h1>
+        <button class="btn btn-secondary scale-hover" @click="showBatchSelect = true">
+          <font-awesome-icon icon="fa-solid fa-list-check" /> 批量编辑
+        </button>
+        <button class="btn btn-secondary scale-hover" @click="handleRefresh" :disabled="isLoading">
+          <font-awesome-icon icon="fa-solid fa-refresh" :spin="isLoading" />刷新
+        </button>
+      </div>
+      <div class="card tip">
+        <font-awesome-icon icon="fa-solid fa-lightbulb" />
+        <span style="font-weight: bold;color: #fab034;">提示：将“持续时间”设置为-1来阻止修改概率</span>
+      </div>
     </div>
-
     <v-skeleton-loader
         v-for="group in store.currentClass.groups"
         v-if="isLoading"
@@ -562,6 +567,20 @@ initSelectionState()
   --v-input-control-height: 10px !important;
 }
 
+.page-header {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.tip{
+  color: #faa311;
+}
+
+.tip .fa-lightbulb {
+  transform: scale(1.2);
+}
+
 .page-title {
   display: flex;
   align-items: center;
@@ -577,7 +596,7 @@ initSelectionState()
   padding: var(--spacing-sm);
   display: flex;
   gap: var(--spacing-sm);
-  margin:0 auto var(--spacing-md) auto;
+  margin-bottom:var(--spacing-md);
   justify-content: space-between;
 }
 
@@ -796,12 +815,12 @@ initSelectionState()
 .modal-backdrop {
   position: fixed; /* 固定定位，相对于视口 */
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 200; /* 确保遮罩层在内容之上 */
-  backdrop-filter: blur(3px);
+  will-change: transform;
 }
 
 .modal {

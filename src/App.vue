@@ -67,7 +67,6 @@ html::-webkit-scrollbar {
 .edit-page {
   width: 100%;
   border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.2);
   padding: 20px;
   /* 始终居中定位（通过动画控制Y轴偏移） */
   left: 50%;
@@ -102,6 +101,8 @@ html::-webkit-scrollbar {
 .slide-up-leave-active,
 .slide-down-enter-active,
 .slide-down-leave-active {
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  will-change: transform; /* 提示浏览器优化 */
   transition: transform 0.5s ease; /* 滑行动画 */
 }
 
