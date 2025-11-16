@@ -44,7 +44,6 @@ const store = useMainStore()
   width: 100%;
   min-height: 100vh;
   perspective: 800px;
-  transform-style: preserve-3d;
   overflow: hidden;
 }
 
@@ -61,13 +60,11 @@ html::-webkit-scrollbar {
   filter: blur(0);
 }
 .main-page.scaled {
-  transform: scale(0.8); /* 激活时缩小到0.5倍 */
-  filter: blur(5px);
+  transform: scale(0.8); /* 激活时缩小到0.8倍 */
 }
 
 /* 编辑页基础样式 */
 .edit-page {
-  position: relative; /* 让投影元素相对自身定位 */
   width: 100%;
   border-radius: 12px;
   box-shadow: 0 0 20px rgba(0,0,0,0.2);
@@ -78,36 +75,26 @@ html::-webkit-scrollbar {
   transform: translate(0, 0);
 }
 
-/* editpage.vue 中给过渡元素添加 3D 继承 */
 .modal-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  /* 关键：继承根容器的 3D 上下文 */
-  transform-style: preserve-3d;
-  perspective: inherit; /* 继承 #app 的透视值 */
   /* 避免 z-index 层级冲突 */
   z-index: 999;
-}
-
-/* 弹窗内容保持 3D 变换能力 */
-.modal {
-  transform-style: preserve-3d;
 }
 
 /* 过渡动画：进入/离开状态 */
 /* 初始状态（进入前）：在屏幕下方 */
 .slide-up-enter-from,
 .slide-up-leave-to {
-  transform: translate(0, 100%) rotateX(-90deg); /* 完全在屏幕下方 */
-  /* 3D效果：上面近下面远 */
+  transform: translate(0, 100%); /* 完全在屏幕下方 */
 }
 
 .slide-down-enter-from,
 .slide-down-leave-to {
-  transform: translate(0, -110%) rotateX(-90deg); /* 完全在屏幕上方 */
+  transform: translate(0, -110%); /* 完全在屏幕上方 */
 }
 
 /* 动画过程 */

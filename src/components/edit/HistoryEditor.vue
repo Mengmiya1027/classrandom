@@ -44,7 +44,7 @@
                 item-value="id"
                 density="comfortable"
                 variant="outlined"
-                @change="handleGroupChange(index)"
+                @update:modelValue="handleGroupChange(index)"
                 :list-props="{ bgColor: 'green' }"
                 item-color="white"
             />
@@ -288,6 +288,7 @@ watch(
 
 // 处理组变更 - 自动选择当前组第一个学生
 const handleGroupChange = (index) => {
+  console.log('[handleGroupChange] 开始处理编辑记录组变更');
   const groupId = editableHistory.value[index].groupId;
   const group = store.currentClass.groups.find(g => g['group-id'] === groupId);
   // 设置为当前组第一个学生
@@ -296,6 +297,7 @@ const handleGroupChange = (index) => {
 
 // 处理新记录组变更 - 自动选择当前组第一个学生
 const handleNewGroupChange = () => {
+  console.log('[handleNewGroupChange] 开始处理新记录组变更');
   const group = store.currentClass.groups.find(g => g['group-id'] === newHistory.value.groupId);
   // 设置为当前组第一个学生
   newHistory.value.name = group?.students?.[0]?.name || '';

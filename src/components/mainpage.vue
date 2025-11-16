@@ -83,15 +83,17 @@
       </div>
 
       <!-- 分数操作按钮 -->
-      <div class="score-actions">
-        <div class="btn-group">
-          <button class="btn btn-secondary" @click="updateScore(1)" :disabled="!currentDrawResult">当前学生+1</button>
-          <button class="btn btn-secondary" @click="updateScore(-1)" :disabled="!currentDrawResult">当前学生-1</button>
-        </div>
-        <!-- 第二排：2个按钮 -->
-        <div class="btn-group">
-          <button class="btn btn-secondary" @click="updateScore(3)" :disabled="!currentDrawResult">当前学生+3</button>
-          <button class="btn btn-secondary" @click="addPrevScore(3)" :disabled="store.drawHistory.length < 2">上一学生+3</button>
+      <div class="score-area">
+        <div class="score-actions">
+          <div class="btn-group">
+            <button class="btn btn-secondary" @click="updateScore(1)" :disabled="!currentDrawResult">当前学生+1</button>
+            <button class="btn btn-secondary" @click="updateScore(-1)" :disabled="!currentDrawResult">当前学生-1</button>
+          </div>
+          <!-- 第二排：2个按钮 -->
+          <div class="btn-group">
+            <button class="btn btn-secondary" @click="updateScore(3)" :disabled="!currentDrawResult">当前学生+3</button>
+            <button class="btn btn-secondary" @click="addPrevScore(3)" :disabled="store.drawHistory.length < 2">上一学生+3</button>
+          </div>
         </div>
       </div>
 
@@ -148,6 +150,7 @@ window.store = store
 // 定义选择框选项
 const drawModeOptions = [
   { value: 'normal', title: '普通模式' },
+  { value: 'fair', title: '固定概率模式' },
   { value: 'group-fair', title: '小组公平模式' },
   { value: 'personal-fair', title: '个人公平模式' }
 ]
@@ -423,6 +426,11 @@ const addPrevScore = (delta) => {
   font-size: 60px;
   font-weight: bold;
   color: var(--primary-color);
+}
+
+.score-area {
+  display: flex;
+  justify-content: center;
 }
 
 .score-actions {

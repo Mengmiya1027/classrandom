@@ -195,6 +195,25 @@ body {
     box-shadow: none;
 }
 
+[class*="choose-group"] [class="v-field__outline"]{
+    [class="v-field__outline__start"] {
+        border-left: 2px solid var(--primary-color);
+        border-bottom: 2px solid var(--primary-color);
+        border-top: 2px solid var(--primary-color);
+    }
+    [class="v-field__outline__end"] {
+        border-right: 2px solid var(--primary-color);
+        border-bottom: 2px solid var(--primary-color);
+        border-top: 2px solid var(--primary-color);
+    }
+    [class="v-field__outline__notch"]:before {
+        border-bottom: 2px solid var(--primary-color);
+        border-top: 2px solid var(--primary-color);
+    }
+}
+
+
+
 .v-menu > .v-overlay__content.v-select__content {
     border-radius: 8px !important;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2) !important;

@@ -113,6 +113,9 @@ export const useMainStore = defineStore('main', {
                 case 'normal':
                     studentsWithProbability = this.handleNormalMode(allStudents)
                     break
+                case 'fair':
+                    studentsWithProbability = this.handleFairMode(allStudents)
+                    break
                 case 'group-fair':
                     studentsWithProbability = this.handleGroupFairMode(allStudents)
                     break
@@ -161,10 +164,35 @@ export const useMainStore = defineStore('main', {
         },
 
         /**
-         * 小组公平模式：仅在历史记录为10的倍数时，基于最近10次小组记录调整概率
-         * @param {Array} students - 学生列表
+         * 固定概率模式：根据editpage.vue中的配置进行抽取，除持续时间外不进行概率调整
+         * @param {Array} allStudents - 学生列表
          * @returns {Array} 带最终概率的学生列表
          */
+        handleFairMode(allStudents) {
+            console.log('[模式处理] 固定概率模式：根据个人配置进行抽取，不调整概率（持续时间除外）')
+
+            // 步骤1：始终处理duration（每次抽取都递减，归0重置概率）
+            this.currentClass.groups.forEach(group => {
+                group.students.forEach(student => {
+                    // 保护机制：fair模式只在修改了duration时才重置概率
+                    if (student.duration > 0) {
+                        student.duration -= 1
+                        if (student.duration === 0 && student.probability !== 1) {
+                            student.probability = 1 // 归0后重置为初始概率
+                            console.log(`[Duration处理] ${student.name}：duration归0，概率重置为1`)
+                        }
+                    }
+                })
+            })
+
+            // 步骤2：根据个人配置概率进行抽取
+            const result = allStudents.map(student => ({
+                ...student,
+                finalProbability: student.probability // 直接使用配置概率
+            }))
+            return result
+        },
+
         /**
          * 小组公平模式：仅在历史记录为10的倍数时，基于最近10次小组记录调整概率
          * 核心：直接修改原始数据确保概率持久化，非调整阶段使用最新概率
@@ -174,17 +202,18 @@ export const useMainStore = defineStore('main', {
         handleGroupFairMode(students) {
             console.log('[模式处理] 小组公平模式：开始处理')
             const historyLength = this.drawHistory.length // 当前历史总条数
-            const shouldAdjustProb = historyLength > 0 && (historyLength + 1) % 8 === 0 // 10的倍数且非0
+            const shouldAdjustProb = historyLength > 0 && (historyLength + 1) % 10 === 0 // 10的倍数且非0
 
             // 步骤1：始终处理duration（每次抽取都递减，归0重置概率）
             this.currentClass.groups.forEach(group => {
                 group.students.forEach(student => {
+                    // 公平机制：为了防止无意篡改，始终重置duration=0时的概率
                     if (student.duration > 0) {
                         student.duration -= 1
-                        if (student.duration === 0) {
-                            student.probability = 1 // 归0后重置为初始概率
-                            console.log(`[Duration处理] 组${group["group-id"]}-${student.name}：duration归0，概率重置为1`)
-                        }
+                    }
+                    if (student.duration === 0 && student.probability !== 1) {
+                        student.probability = 1 // 归0后重置为初始概率
+                        console.log(`[Duration处理] 组${group["group-id"]}-${student.name}：duration归0，概率重置为1`)
                     }
                 })
             })
@@ -206,30 +235,33 @@ export const useMainStore = defineStore('main', {
                     if (groupCount < 2 || groupCount > 4) {
                         // 遍历小组内所有学生
                         group.students.forEach(originalStudent => {
-                            const oldProb = originalStudent.probability // 记录调整前概率
+                            // 只修改持续时间>-1的学生的概率
+                            if (originalStudent.duration === 0) {
+                                const oldProb = originalStudent.probability // 记录调整前概率
 
-                            // 上调：次数<2 → 概率+0.3，duration=10
-                            if (groupCount < 1) {
-                                originalStudent.probability += 0.3
-                                originalStudent.duration = 10
-                                console.log(`[概率调整] 组${groupId}-${originalStudent.name}：${oldProb} → ${originalStudent.probability}（次数${groupCount}<2）`)
-                            }
-                            // 下调：次数>4 → 概率-0.3（最低0.1），duration=10
-                            else if (groupCount > 1) {
-                                originalStudent.probability = Math.max(0.1, originalStudent.probability - 0.3)
-                                originalStudent.duration = 10
-                                console.log(`[概率调整] 组${groupId}-${originalStudent.name}：${oldProb} → ${originalStudent.probability}（次数${groupCount}>4）`)
-                            }
+                                // 上调：次数<2 → 概率+0.3，duration=10
+                                if (groupCount < 1) {
+                                    originalStudent.probability += 0.3
+                                    originalStudent.duration = 10
+                                    console.log(`[概率调整] 组${groupId}-${originalStudent.name}：${oldProb} → ${originalStudent.probability}（次数${groupCount}<2）`)
+                                }
+                                // 下调：次数>4 → 概率-0.3（最低0.1），duration=10
+                                else if (groupCount > 1) {
+                                    originalStudent.probability = Math.max(0.1, originalStudent.probability - 0.3)
+                                    originalStudent.duration = 10
+                                    console.log(`[概率调整] 组${groupId}-${originalStudent.name}：${oldProb} → ${originalStudent.probability}（次数${groupCount}>4）`)
+                                }
 
-                            // 收集调整信息（去重，每个小组只记录一次）
-                            if (adjustedGroups.every(g => g.groupId !== groupId)) {
-                                adjustedGroups.push({
-                                    groupId,
-                                    count: groupCount,
-                                    change: groupCount < 2 ? '上升' : '下降',
-                                    newProb: Math.round(originalStudent.probability * 100) + '%', // 调整后的值
-                                    duration: 10
-                                })
+                                // 收集调整信息（去重，每个小组只记录一次）
+                                if (adjustedGroups.every(g => g.groupId !== groupId)) {
+                                    adjustedGroups.push({
+                                        groupId,
+                                        count: groupCount,
+                                        change: groupCount < 2 ? '上升' : '下降',
+                                        newProb: Math.round(originalStudent.probability * 100) + '%', // 调整后的值
+                                        duration: 10
+                                    })
+                                }
                             }
                         })
                     }
@@ -255,12 +287,6 @@ export const useMainStore = defineStore('main', {
                 }))
             )
         },
-
-        /**
-         * 个人公平模式：仅在历史记录为10的倍数时，基于最近10次个人记录调整概率
-         * @param {Array} students - 学生列表
-         * @returns {Array} 带最终概率的学生列表
-         */
         /**
          * 个人公平模式：仅在历史记录为10的倍数时，基于最近10次个人记录调整概率
          * 核心：直接修改原始数据确保概率持久化，非调整阶段使用最新概率
@@ -270,7 +296,7 @@ export const useMainStore = defineStore('main', {
         handlePersonalFairMode(students) {
             console.log('[模式处理] 个人公平模式：开始处理')
             const historyLength = this.drawHistory.length // 当前历史总条数
-            const shouldAdjustProb = historyLength > 0 && historyLength % 8 === 0 // 10的倍数且非0
+            const shouldAdjustProb = historyLength > 0 && (historyLength + 1) % 10 === 0 // 10的倍数且非0
 
             // 步骤1：始终处理duration（每次抽取都递减，归0重置概率）
             this.currentClass.groups.forEach(group => {
