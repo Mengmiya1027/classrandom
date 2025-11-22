@@ -3,25 +3,31 @@ import { defineStore } from 'pinia'
 // 2. 相对路径导入 students.json（根据实际文件位置调整，此处默认 src/assets/data/ 目录）
 import rawStudents from '../assets/data/students.json'
 
+// 修正：浏览器环境兼容的 Base64 解密函数（支持中文）
+const decodeBase64 = (base64Str) => {
+    // 先解码 Base64，再处理 UTF-8 中文
+    return decodeURIComponent(escape(atob(base64Str)))
+};
+
 /**
  * 初始化数据：给原始学生数据补全 score/probability/duration/other 字段
  * @returns {Array} 处理后的完整班级数据
  */
 const initData = () => {
     try {
-        const processedData = rawStudents.map((cls, clsIndex) => ({
-            "class-name": cls["class-name"],
-            groups: cls.groups.map((group, groupIndex) => ({
+        const processedData = rawStudents.map((cls) => ({
+            "class-name": decodeBase64(cls["class-name"]), // 解密班级名称
+            groups: cls.groups.map((group) => ({
                 "group-id": group["group-id"],
-                other: 0, // 初始化小组其他加分
-                students: group.students.map((name, studentIndex) => ({
-                    name,
-                    score: 0, // 初始分数
-                    probability: 1, // 初始抽取概率
-                    duration: 0 // 初始概率持续时间
+                other: 0,
+                students: group.students.map((encryptedName) => ({
+                    name: decodeBase64(encryptedName), // 解密学生姓名
+                    score: 0,
+                    probability: 1,
+                    duration: 0
                 }))
             }))
-        }))
+        }));
         console.log('[数据初始化] 成功！处理后班级数量：', processedData.length)
         console.log('[数据初始化] 完整数据预览：', processedData)
         return processedData
