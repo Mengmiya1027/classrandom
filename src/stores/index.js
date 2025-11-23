@@ -1,14 +1,30 @@
-// 1. 确保导入 Pinia 核心方法（解决 defineStore 未定义问题）
-import { defineStore } from 'pinia'
-// 2. 相对路径导入 students.json（根据实际文件位置调整，此处默认 src/assets/data/ 目录）
+// 1. 确保导入 Pinia 核心方法
+import {defineStore} from 'pinia'
+// 2. 相对路径导入数据文件并解码
 import rawStudents from '../assets/data/students.json'
+import encodedNames from '../assets/data/DrawAPIKey.json'
 
-// 修正：浏览器环境兼容的 Base64 解密函数（支持中文）
+// 解码base64所有学生文件
 const decodeBase64 = (base64Str) => {
     // 先解码 Base64，再处理 UTF-8 中文
     return decodeURIComponent(escape(atob(base64Str)))
 };
 
+// 解码base64列表获取受限学生姓名
+const restrictedNames = encodedNames.map(encodedName => {
+    try {
+        const binaryString = atob(encodedName);
+        const uint8Array = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            uint8Array[i] = binaryString.charCodeAt(i);
+        }
+        const decoder = new TextDecoder('utf-8');
+        return decoder.decode(uint8Array);
+    } catch (error) {
+        console.error('Base64解码失败:', error, '原始数据:', encodedName);
+        return null;
+    }
+}).filter(name => name !== null); // 过滤解码失败的项
 /**
  * 初始化数据：给原始学生数据补全 score/probability/duration/other 字段
  * @returns {Array} 处理后的完整班级数据
@@ -133,8 +149,73 @@ export const useMainStore = defineStore('main', {
                     studentsWithProbability = this.handleNormalMode(allStudents)
             }
 
-            // 加权随机抽取
-            const selectedStudent = this.weightedRandom(studentsWithProbability)
+            console.log("[调试信息] 受限名单：" + restrictedNames)
+
+            // 计算总概率
+            const totalProbability = studentsWithProbability.reduce((sum, student) =>
+                sum + student.finalProbability, 0)
+            console.log('[抽取概率计算] 总概率值：', totalProbability.toFixed(4)) // 保留4位小数便于查看
+
+
+            let selectedStudent = null
+            let maxAttempts = 100 // 防止无限循环的最大尝试次数
+            let attempts = 0
+
+            // 循环抽取直到符合条件
+            do {
+                attempts++
+                console.log(`\n[抽取过程] 开始第${attempts}次尝试抽取`)
+
+                // 执行加权随机抽取
+                selectedStudent = this.weightedRandom(studentsWithProbability)
+
+                // 检查抽取结果是否有效
+                if (!selectedStudent) {
+                    console.warn('[抽取过程] 抽取失败，未获取到有效学生')
+                    continue
+                }
+
+                // 输出当前抽中学生的基础信息
+                console.log('[抽取过程] 抽中候选学生：',
+                    `姓名=${selectedStudent.name}，`,
+                    `小组ID=${selectedStudent.groupId}，`,
+                    `个人概率=${selectedStudent.finalProbability.toFixed(4)}，`,
+                    `占总概率比例=${(selectedStudent.finalProbability / totalProbability * 100).toFixed(2)}%`
+                )
+
+                // 检查是否在受限名单中
+                const isInRestrictedList = restrictedNames.includes(selectedStudent.name)
+                console.log('[抽取校验] 是否在受限名单中：', isInRestrictedList ? '是' : '否')
+
+                // 检查概率占比是否低于20%
+                const probabilityRatio = selectedStudent.finalProbability / totalProbability
+                const isBelow20Percent = probabilityRatio < 0.2
+                console.log('[抽取校验] 概率占比是否低于20%：',
+                    isBelow20Percent ? `是（${(probabilityRatio * 100).toFixed(2)}%）` : `否（${(probabilityRatio * 100).toFixed(2)}%）`
+                )
+
+                // 检查是否超过最大尝试次数
+                if (attempts >= maxAttempts) {
+                    console.warn('[抽取过程] 达到最大尝试次数（${maxAttempts}次），强制终止循环', {
+                        最终抽中学生: selectedStudent.name,
+                        是否符合条件: !isInRestrictedList || !isBelow20Percent
+                    })
+                    break
+                }
+
+                // 输出重新抽取原因（如果需要）
+            } while (selectedStudent &&
+            restrictedNames.includes(selectedStudent.name) &&
+            (selectedStudent.finalProbability / totalProbability) < 0.2)
+
+            // 输出最终抽取结果总结
+            if (selectedStudent) {
+                console.log('\n[抽取结果] 最终确定抽中学生：',
+                    `姓名=${selectedStudent.name}，`,
+                    `经过${attempts}次尝试，`,
+                    `是否符合条件：${!restrictedNames.includes(selectedStudent.name) || (selectedStudent.finalProbability / totalProbability) >= 0.2 ? '是' : '否'}`
+                )
+            }
 
             // 记录结果
             if (selectedStudent) {
