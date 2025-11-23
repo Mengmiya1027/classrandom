@@ -167,6 +167,18 @@ body {
     padding-right: 10px;
 }
 
+.error {
+    padding: var(--spacing-sm);
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-bottom:var(--spacing-md);
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fb5447;
+    border: 3px solid var(--danger);
+    padding-right: 10px;
+}
+
 .v-overlay__content, .v-time-picker-controls__time__btn {
     border-radius: var(--border-radius) !important;
 }

@@ -117,15 +117,49 @@
         <p>Created with <font-awesome-icon icon="fa-brands fa-vuejs" style="color:forestgreen;"></font-awesome-icon> Vue , made by <a href="https://github.com/Mengmiya1027" target="_blank" style="color: skyblue">Mengmiya1027</a></p>
       </div>
     </div>
-    <transition name="popup">
-      <div
-          v-if="store.adjustmentPopup.show"
-          class="adjustment-popup"
-      >
-        <font-awesome-icon :icon="store.adjustmentPopup.type === 'group' ? 'fa-solid fa-users' : 'fa-solid fa-user'"></font-awesome-icon>
-        <pre class="popup-message">{{ store.adjustmentPopup.message }}</pre>
+    <!-- 使用teleport将弹窗传送到body -->
+    <teleport to="body">
+      <div class="modal-layer">
+        <transition name="fade">
+          <div
+              v-if="store.adjustmentPopup.show"
+              class="modal-backdrop"
+              @click="handleBackdropClick"
+          ></div>
+        </transition>
+        <transition name="popup">
+          <div class="modal popup-content" v-if="store.adjustmentPopup.show" @click.stop>
+            <!-- 概率修改弹窗内容 -->
+            <div v-if="store.adjustmentPopup.type === 'probability'">
+              <div class="popup-header">
+                <div class="tip card" style="width: 100%; display: flex; justify-content: center; align-items: center; margin: 0">
+                  <span class="tip-title">{{ store.adjustmentPopup.title }}</span>
+                </div>
+              </div>
+              <pre class="popup-message">{{ store.adjustmentPopup.message }}</pre>
+            </div>
+
+            <!-- 错误弹窗内容 -->
+            <div v-if="store.adjustmentPopup.type === 'error'">
+              <div class="popup-header error-header">
+                <div class="error card" style="width: 100%; display: flex; justify-content: center; align-items: center; margin: 0">
+                  <span class="error-title">{{ store.adjustmentPopup.title }}</span>
+                </div>
+              </div>
+              <pre class="popup-message">{{ store.adjustmentPopup.message }}</pre>
+              <div class="popup-footer">
+                <button
+                    class="btn btn-primary apply-btn"
+                    @click="store.setAdjustmentPopup(false)"
+                >
+                  关闭
+                </button>
+              </div>
+            </div>
+          </div>
+        </transition>
       </div>
-    </transition>
+    </teleport>
   </div>
 </template>
 
@@ -151,17 +185,9 @@ window.store = store
 const drawModeOptions = [
   { value: 'normal', title: '普通模式' },
   { value: 'fair', title: '固定概率模式' },
-  { value: 'group-fair', title: '小组公平模式' },
-  { value: 'personal-fair', title: '个人公平模式' }
+  { value: 'group-fair', title: '新小组公平模式' },
+  { value: 'old-group-fair', title: '旧小组公平模式' }
 ]
-
-const handleAnimationEnd = () => {
-  if (store.adjustmentPopup.isFadingOut) {
-    store.adjustmentPopup.isFadingOut = false;  // 重置动画状态
-    // 可选：如果需要完全移除DOM，可在这里设置show: false（但v-if已包含此逻辑）
-  }
-};
-
 const scrollToStudent = (name) => {
   nextTick(() => {
     const studentEl = document.getElementById(`student-${name}`)
@@ -180,6 +206,22 @@ const scrollToStudent = (name) => {
   })
 }
 
+// 监听弹窗显示状态，处理自动关闭
+watch(
+    () => store.adjustmentPopup.show,
+    (newVal) => {
+      if (newVal && store.adjustmentPopup.type === 'probability') {
+        // 2秒后自动关闭概率调整弹窗
+        const timer = setTimeout(() => {
+          store.setAdjustmentPopup(false)
+        }, 2000)
+
+        // 清除定时器防止内存泄漏
+        return () => clearTimeout(timer)
+      }
+    }
+)
+
 watch(
     () => store.drawHistory,
     () => {
@@ -195,6 +237,13 @@ watch(
     },
     { deep: true }
 );
+
+// 点击遮罩层关闭（仅错误类型弹窗允许）
+const handleBackdropClick = () => {
+  if (store.adjustmentPopup.type === 'error') {
+    store.setAdjustmentPopup(false)
+  }
+}
 
 // 为历史项对应的学生加分
 const addScoreToHistoryItem = (name) => {
@@ -502,63 +551,148 @@ const addPrevScore = (delta) => {
   margin: 0 2px;
 }
 
-.adjustment-popup {
-  position: fixed;
-  left: 47.5%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  background-color: var(--primary-color);
-  color: white;
-  padding: 16px; /* 固定内边距，避免过窄 */
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  z-index: 100;
-   /* 核心修复：允许内容自适应宽度，同时限制最大宽度不超过视口 */
-  width: auto; /* 宽度随内容自适应 */
-  max-width: 700px; /* 最大宽度为视口的90%，避免超出屏幕 */
-  max-height: 80vh; /* 最大高度为视口的80%，避免内容过长溢出 */
-   /* 内容溢出时显示滚动条 */
-  overflow-y: auto;
-}
-
-.popup-message {
-
-  margin: 0;
-  white-space: pre-wrap; /* 保留换行符 */
-  word-wrap: normal;
-  font-family: 'DingTalk JinBuTi', 'DingTalk Sans', sans-serif;
-  font-size: 25px;
-  line-height: 1.5; /* 增加行高，提升可读性 */
-}
-
 /* 图标样式（可选，确保图标不挤压内容） */
 .adjustment-popup i {
   margin-top: 2px; /* 与文字顶部对齐 */
   font-size: 18px;
 }
 
-.popup-enter-from {
-  opacity: 0;
-}
-.popup-enter-active {
-  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-}
-.popup-enter-to {
-  opacity: 1;
+.modal-layer {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200; /* 作为整个模态层的基准层级 */
+  pointer-events: none;
 }
 
-/* 消失动画（离开时触发） */
-.popup-leave-from {
-  opacity: 1;
+.modal-backdrop {
+  position: fixed; /* 固定定位，相对于视口 */
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200; /* 确保遮罩层在内容之上 */
+  will-change: transform;
+  pointer-events: all;
 }
-.popup-leave-active {
-  transition: opacity 0.3s ease-in, transform 0.3s ease-in;
+
+.modal {
+  width: 100%;
+  max-width: 600px;
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 201;
+  animation: fadeIn 0.3s ease;
+  will-change: transform;
+  pointer-events: all;
 }
-.popup-leave-to {
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.popup-header .selected-name {
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.error-header {
+  border-color: #fecaca;
+}
+
+.tip-title{
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--warning);
+}
+
+.error-title {
+  font-size: 35px;
+  font-weight: 800;
+  color: white;
+}
+
+.popup-message {
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.6;
+  word-wrap: normal;
+  font-family: inherit;
+  font-size: 20px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.popup-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.apply-btn {
+  flex: 1;
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  font-size: 20px;
+  padding: 6px;
+  font-weight: 700;
+}
+
+/* ====== 动画 ====== */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
+}
+
+.popup-enter-active {
+  animation: fadeIn 0.3s ease;
+}
+
+.popup-leave-active {
+  animation: fadeOut 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.97); }
+}
+
+/* 图标样式 */
+.popup-header i {
+  font-size: 24px;
+}
+
+.popup-header i.fa-random {
+  color: var(--primary-color);
+}
+
+.popup-header i.fa-exclamation-circle {
+  color: #dc2626;
 }
 
 </style>
