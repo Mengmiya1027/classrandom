@@ -333,7 +333,7 @@ export const useMainStore = defineStore('main', {
                                     console.log(`[概率调整] 组${groupId}-${originalStudent.name}：${oldProb} → ${originalStudent.probability}（次数${groupCount}<2）`)
                                 }
                                 // 下调：次数>2 → 概率-0.3（最低0.1），duration=10
-                                else if (groupCount >= 2) {
+                                else if (groupCount > 2) {
                                     if (originalStudent.probability > 1) {
                                         originalStudent.probability = 0.7
                                     } else {
