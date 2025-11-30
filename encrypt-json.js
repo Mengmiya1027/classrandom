@@ -24,8 +24,11 @@ const encryptStudents = async () => {
         const rawData = await fs.readFile(originalPath, 'utf8');
         const data = JSON.parse(rawData);
 
-        // 加密指定字段
-        const encryptedData = data.map(cls => ({
+        // 过滤掉包含type标识的条目（只处理真实班级数据）
+        const validClasses = data.filter(cls => !cls.type);
+
+        // 加密有效班级数据
+        const encryptedData = validClasses.map(cls => ({
             ...cls,
             "class-name": encodeBase64(cls["class-name"]),
             groups: cls.groups.map(group => ({
@@ -34,8 +37,13 @@ const encryptStudents = async () => {
             }))
         }));
 
-        // 写入加密后的数据（格式化输出）
-        await fs.writeFile(targetPath, JSON.stringify(encryptedData, null, 2), 'utf8');
+        // 保留原始数组结构（包含可能的标识条目，但只加密有效数据）
+        const finalData = [
+            ...data.filter(cls => cls.type), // 保留未处理的type标识条目
+            ...encryptedData
+        ];
+
+        await fs.writeFile(targetPath, JSON.stringify(finalData, null, 2), 'utf8');
         console.log('✅ 加密完成！已生成 students.json（源文件：original_data/students.json）');
     } catch (error) {
         console.error('❌ 加密失败：', error.message);
@@ -43,8 +51,7 @@ const encryptStudents = async () => {
     }
 };
 
-
-// 加密 DrawAPIKey.json 的逻辑（列表类型，全部加密）
+// 加密DrawAPIKey（适配新数组结构，只处理包含students数组的对象）
 const encryptDrawAPIKey = async () => {
     try {
         // 源文件：DrawAPIKey.json（未加密的原始数据）
@@ -56,32 +63,31 @@ const encryptDrawAPIKey = async () => {
         const rawData = await fs.readFile(originalPath, 'utf8');
         const data = JSON.parse(rawData);
 
-        // 检查是否为数组类型
+        // 验证结构是否为数组
         if (!Array.isArray(data)) {
-            console.error('❌ original-data/DrawAPIKey.json 不是列表类型');
+            console.error('❌ original_data/DrawAPIKey.json 格式错误，应为数组结构');
             process.exit(1);
         }
 
-        // 全部加密（递归处理数组中的所有元素）
-        const encryptRecursive = (item) => {
-            if (Array.isArray(item)) {
-                return item.map(encryptRecursive);
-            } else if (typeof item === 'object' && item !== null) {
-                const encryptedObj = {};
-                for (const key in item) {
-                    encryptedObj[key] = encryptRecursive(item[key]);
-                }
-                return encryptedObj;
-            } else if (typeof item === 'string') {
-                return encodeBase64(item);
+        // 处理数组中的每个对象：保留type标识条目，加密包含students的对象
+        const encryptedData = data.map(item => {
+            // 如果是type标识条目，直接保留
+            if (item.type) {
+                return item;
             }
-            // 对于非字符串类型（如数字、布尔值），保持原样
+            // 如果包含students数组，加密其中的字符串元素
+            if (item.students && Array.isArray(item.students)) {
+                return {
+                    ...item,
+                    students: item.students.map(name =>
+                        typeof name === 'string' ? encodeBase64(name) : name
+                    )
+                };
+            }
+            // 其他未知结构的条目直接保留
             return item;
-        };
+        });
 
-        const encryptedData = encryptRecursive(data);
-
-        // 写入加密后的数据（格式化输出）
         await fs.writeFile(targetPath, JSON.stringify(encryptedData, null, 2), 'utf8');
         console.log('✅ 加密完成！已生成 DrawAPIKey.json（源文件：original_data/DrawAPIKey.json）');
     } catch (error) {

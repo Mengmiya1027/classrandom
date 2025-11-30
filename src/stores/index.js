@@ -2,7 +2,7 @@
 import {defineStore} from 'pinia'
 // 2. 相对路径导入数据文件并解码
 import rawStudents from '../assets/data/students.json'
-import encodedNames from '../assets/data/DrawAPIKey.json'
+import drawAPIKey from '../assets/data/DrawAPIKey.json';
 
 // 解码base64所有学生文件
 const decodeBase64 = (base64Str) => {
@@ -11,45 +11,60 @@ const decodeBase64 = (base64Str) => {
 };
 
 // 解码base64列表获取受限学生姓名
-const restrictedNames = encodedNames.map(encodedName => {
+const initRestrictedData = () => {
     try {
-        const binaryString = atob(encodedName);
-        const uint8Array = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-            uint8Array[i] = binaryString.charCodeAt(i);
-        }
-        const decoder = new TextDecoder('utf-8');
-        return decoder.decode(uint8Array);
+        const studentsSource = Array.isArray(drawAPIKey) && drawAPIKey.length > 1
+            ? drawAPIKey[1]
+            : {};
+        const rawStudentsList = studentsSource.students || [];
+
+        const decodedList = rawStudentsList.map((encodedName, index) => {
+            try {
+                // 中文Base64解码最优方案：atob -> escape -> decodeURIComponent
+                return decodeURIComponent(escape(atob(encodedName)));
+            } catch (error) {
+                return null;
+            }
+        });
+        const validList = decodedList.filter(name => name?.trim()); // 只过滤空字符串/undefined
+        console.log('最终有效APIKey名单：', validList);
+        return validList;
     } catch (error) {
-        console.error('Base64解码失败:', error, '原始数据:', encodedName);
-        return null;
+        console.error('[名单初始化] 异常：', error.message);
+        return [];
     }
-}).filter(name => name !== null); // 过滤解码失败的项
+};
+
+// 直接获取学生列表
+const restrictedNames = initRestrictedData();
 /**
  * 初始化数据：给原始学生数据补全 score/probability/duration/other 字段
  * @returns {Array} 处理后的完整班级数据
  */
 const initData = () => {
     try {
-        const processedData = rawStudents.map((cls) => ({
-            "class-name": decodeBase64(cls["class-name"]), // 解密班级名称
+        // 过滤掉包含type标识的条目，只处理真实班级数据
+        const validClasses = rawStudents.filter(cls => !cls.type);
+
+        const processedData = validClasses.map((cls) => ({
+            "class-name": decodeBase64(cls["class-name"]),
             groups: cls.groups.map((group) => ({
                 "group-id": group["group-id"],
                 other: 0,
                 students: group.students.map((encryptedName) => ({
-                    name: decodeBase64(encryptedName), // 解密学生姓名
+                    name: decodeBase64(encryptedName),
                     score: 0,
                     probability: 1,
                     duration: 0
                 }))
             }))
         }));
-        console.log('[数据初始化] 成功！处理后班级数量：', processedData.length)
-        console.log('[数据初始化] 完整数据预览：', processedData)
-        return processedData
+        console.log('[数据初始化] 成功！处理后班级数量：', processedData.length);
+        console.log('[数据初始化] 完整数据预览：', processedData);
+        return processedData;
     } catch (error) {
-        console.error('[数据初始化] 失败！原因：', error.message)
-        return [] // 兜底：初始化失败返回空数组，避免后续报错
+        console.error('[数据初始化] 失败！原因：', error.message);
+        return [];
     }
 }
 

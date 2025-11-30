@@ -1,5 +1,12 @@
 [
-  "6LS65pix5Yev",
-  "5byg54ea6ZyE",
-  "6ZmG5peX5paM"
+  {
+    "type": "APIKey-mmy"
+  },
+  {
+    "students": [
+      "6LS65pix5Yev",
+      "5byg54ea6ZyE",
+      "6ZmG5peX5paM"
+    ]
+  }
 ]
