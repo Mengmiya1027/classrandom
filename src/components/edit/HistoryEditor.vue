@@ -100,6 +100,7 @@
         <p v-if="editableHistory.length === 0" class="empty-hint">暂无记录，请添加</p>
       </div>
 
+
       <!-- 添加新记录区域 -->
       <div class="add-history-section card">
         <h4 class="section-title">

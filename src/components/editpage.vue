@@ -21,6 +21,13 @@
         >
           <font-awesome-icon icon="fa-solid fa-history"/> 抽取历史
         </button>
+        <button
+            class="tab-btn"
+            :class="{ 'active': activeTab === 'settings' }"
+            @click="activeTab = 'settings'"
+        >
+          <font-awesome-icon icon="fa-solid fa-gear"/> 设置
+        </button>
       </div>
       <div class="header-actions btn-group">
         <button class="btn btn-secondary scale-hover" @click="$emit('close')">
@@ -33,6 +40,7 @@
     <div class="tab-content">
       <InfoEditor v-if="activeTab === 'info'" />
       <HistoryEditor v-if="activeTab === 'history'" />
+      <AppSettings v-if="activeTab === 'settings'" />
     </div>
   </div>
 </template>
@@ -42,6 +50,7 @@ import {defineAsyncComponent, ref} from 'vue'
 
 const InfoEditor = defineAsyncComponent(() => import('./edit/InfoEditor.vue'))
 const HistoryEditor = defineAsyncComponent(() => import('./edit/HistoryEditor.vue'))
+const AppSettings = defineAsyncComponent(() => import('./edit/AppSettings.vue'))
 
 // 活跃选项卡
 const activeTab = ref('info')

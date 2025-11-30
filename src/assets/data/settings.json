@@ -1,0 +1,15 @@
+[
+  {
+    "type": "settings"
+  },
+  {
+    "name": "Zoom",
+    "set-type": "number",
+    "default": 1
+  },
+  {
+    "name": "ExtractPersonalizedTemplates",
+    "set-type": "boolean",
+    "default": false
+  }
+]

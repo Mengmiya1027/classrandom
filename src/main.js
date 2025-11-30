@@ -34,6 +34,7 @@ import {
     faList,
     faRefresh,
     faLightbulb,
+    faGear,
 } from '@fortawesome/free-solid-svg-icons'
 import { faVuejs } from '@fortawesome/free-brands-svg-icons'
 library.add(
@@ -59,6 +60,7 @@ library.add(
     faList,
     faRefresh,
     faLightbulb,
+    faGear,
 )
 
 const vuetify = createVuetify({
