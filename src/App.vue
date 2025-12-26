@@ -34,8 +34,6 @@ import MainPage from './components/mainpage.vue'
 import EditPage from './components/editpage.vue'
 import StatisticsPage from './components/statistics.vue'
 import { useMainStore } from './stores/index.js'
-
-const store = useMainStore()
 </script>
 
 <style>
